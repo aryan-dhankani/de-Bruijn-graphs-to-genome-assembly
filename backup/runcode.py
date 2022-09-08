@@ -1,13 +1,13 @@
 from enum import unique
 import sys, os
 
-f = open ("strings.txt", "r")
+f = open ("cyclicseq.txt", "r")
 f1 = f.read()
 listm = f1.split('\n')
 f.close()
 
 
-print (listm)
+print ("List of  k+1 mers  ", listm)
 
 #print unique two-mers or k mers 
 
@@ -18,18 +18,19 @@ print("length of every unique kmer is :" , k)
 i=0
 kmers = []
 while i<len(listm):
-    print (listm[i])
+    #getting all (non-unique) k mers from k+1 mers
     kmers.append(listm[i][0:k])
     kmers.append(listm[i][k-1: k+1])
     i = i+1
 
 print(kmers)
 
+#picking out unique kmers
 unique_kmers = [*set(kmers)]
-print(unique_kmers)
+print("list of unique kmers :" , unique_kmers)
 
 
-#making matrix of 2-mers with additional ACTG they need to make required 3mer
+#making matrix of k-mers with additional ACTG they need to make required k+1mer
 
 rows = 4
 columns = len(unique_kmers)
@@ -47,10 +48,8 @@ for i in range(0 , len(unique_kmers)):
         else :
             arr[i][j] = -1
 
-
+#Our Required Matrix :
 print (arr)
-
-ans = ""
 
 numu = set()
 
@@ -72,18 +71,42 @@ print("index to start with : " , int(sumasfloat))
 
 start = int(sumasfloat)
 
+ans = ""
+temp = ""
 ans += unique_kmers[start]
 
+cunt = 0
 m = 0
-
-while(m < 4) :
-    if(arr[start][m] != -1) :
-        x = arr[start][m]
-        arr[start][m] = -1
-        start = x
-        ans += unique_kmers[start][-1]
-        m = 0
-    else :
-        m +=1 
+addidx = 0
+flag = True
+storage = []
+while(flag) :
+    storage = []
+    temp = ""
+    while(m < 4) :
+        if(arr[start][m] != -1) :
+                x = arr[start][m]
+                arr[start][m] = -1
+                storage.append(x)
+                start = x
+                temp += unique_kmers[start][-1]
+                m = 0
+        else :
+                m +=1 
+        print(temp , storage)        
+    if len(ans) == k :
+        ans = ans + temp
+    else :   
+        cunt = len(storage)*4
+        for i in range(len(storage)) :
+            for j in range(4) :       
+                if arr[storage[i]][j] != -1 :
+                    ans = ans[0:2+addidx] + temp +  ans[2+addidx:]
+                    addidx = storage[i]
+                    
+                else :
+                    cunt -= 1
+        if(cunt == 0) :
+            flag = False
     
-print(ans)
+print(ans , storage)
